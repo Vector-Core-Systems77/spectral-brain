@@ -30,7 +30,6 @@ jobs:
         with:
           accept-android-sdk-licenses: true
 
-      # هذه هي الخطوة الجديدة التي تحل المشكلة
       - name: Set NDK environment
         run: echo "NDK_HOME=$ANDROID_NDK_HOME" >> $GITHUB_ENV
 
@@ -117,6 +116,12 @@ jobs:
           EOF
 
           echo 'org.gradle.jvmargs=-Xmx2048m' > src-tauri/gen/android/gradle.properties
+
+      # ============================================
+      # الخطوة الجديدة: إصلاح Gradle
+      # ============================================
+      - name: Fix Gradle permissions
+        run: chmod +x src-tauri/gen/android/gradlew
 
       - name: Build APK
         run: cargo tauri android build --apk --ci
