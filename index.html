@@ -2,11 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Spectral Brain</title>
+    <title>Spectral Brain - Ping Test</title>
   </head>
   <body>
-    <h1>Spectral Brain</h1>
-    <button id="run">Run Spectral Reasoning</button>
+    <h1>Spectral Brain - Ping Test</h1>
+    <button id="run">Run Spectral Reasoning (Ping)</button>
     <pre id="output"></pre>
 
     <script>
@@ -14,13 +14,12 @@
 
       document.getElementById("run").addEventListener("click", async () => {
         const output = document.getElementById("output");
-        output.textContent = "Running Spectral Reasoning...";
+        output.textContent = "Testing connection...";
         try {
-          // استدعاء الأمر المسجل في Rust
-          const result = await invoke("run_spectral_brain");
-          output.textContent = result;
+          const result = await invoke("ping");
+          output.textContent = "Response: " + result;
         } catch (err) {
-          output.textContent = "Error invoking Spectral Brain: " + err;
+          output.textContent = "Error: " + err;
         }
       });
     </script>
