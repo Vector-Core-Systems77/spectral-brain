@@ -54,12 +54,72 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version 2.2.3 --locked
 
-      - name: Remove broken Android project
-        run: rm -rf src-tauri/gen/android
+      # ============================================
+      # إنشاء مشروع Android يدويًا (بدون init)
+      # ============================================
+      - name: Create Android project manually
+        run: |
+          mkdir -p src-tauri/gen/android/app/src/main/java/com/spectral/brain
+          mkdir -p src-tauri/gen/android/app/src/main/res/values
 
-      - name: Initialize Android project
-        working-directory: src-tauri
-        run: cargo tauri android init --ci
+          # build.gradle.kts
+          cat > src-tauri/gen/android/app/build.gradle.kts << 'EOF'
+          plugins {
+              id("com.android.application")
+              kotlin("android")
+          }
+
+          android {
+              namespace = "com.spectral.brain"
+              compileSdk = 34
+              defaultConfig {
+                  applicationId = "com.spectral.brain"
+                  minSdk = 24
+                  targetSdk = 34
+                  versionCode = 1
+                  versionName = "0.1.0"
+              }
+              buildTypes {
+                  getByName("debug") {
+                      isDebuggable = true
+                  }
+              }
+          }
+
+          dependencies {
+              implementation("androidx.core:core-ktx:1.12.0")
+          }
+          EOF
+
+          # settings.gradle.kts
+          cat > src-tauri/gen/android/settings.gradle.kts << 'EOF'
+          rootProject.name = "spectral-brain"
+          include(":app")
+          EOF
+
+          # AndroidManifest.xml
+          cat > src-tauri/gen/android/app/src/main/AndroidManifest.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET"/>
+              <application
+                  android:label="Spectral Brain"
+                  android:theme="@android:style/Theme.Material.NoActionBar"
+                  android:usesCleartextTraffic="true">
+                  <activity
+                      android:name="com.spectral.brain.MainActivity"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # gradle.properties
+          echo 'org.gradle.jvmargs=-Xmx2048m' > src-tauri/gen/android/gradle.properties
 
       - name: Build APK
         run: cargo tauri android build --apk --ci
