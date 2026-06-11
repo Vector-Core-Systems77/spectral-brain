@@ -1,3 +1,8 @@
+#![cfg_attr(
+    all(not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
+)]
+
 use tauri::command;
 use std::f64::consts::PI;
 
@@ -71,6 +76,10 @@ fn spectral_prime(n: usize) -> f64 {
     p_k + gamma * (p_true - p_k)
 }
 
+// =======================
+// واجهة Tauri
+// =======================
+
 #[command]
 fn run_spectral_brain() -> String {
     let n = 100;
@@ -90,4 +99,4 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![run_spectral_brain])
         .run(tauri::generate_context!())
         .expect("error while running Spectral Brain");
-            }
+}
