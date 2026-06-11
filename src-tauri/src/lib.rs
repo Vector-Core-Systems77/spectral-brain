@@ -4,7 +4,6 @@
 )]
 
 use tauri::command;
-use std::f64::consts::PI;
 
 // =======================
 // القلب الطيفي (Spectral Brain)
