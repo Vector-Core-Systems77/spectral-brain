@@ -48,20 +48,11 @@ jobs:
           mkdir -p src-tauri/icons
           convert -size 256x256 xc:blue -type TrueColorAlpha PNG32:src-tauri/icons/icon.png
 
-      # ============================================
-      # الخطوة الحاسمة: تثبيت Tauri CLI أولاً
-      # ============================================
       - name: Install Tauri CLI
-        run: |
-          cargo install tauri-cli --version 2.2.3 --locked
-          # إنشاء رابط رمزي ليكون أمر `tauri` متاحًا
-          sudo ln -s $(which tauri-cli) /usr/local/bin/tauri
+        run: cargo install tauri-cli --version 2.2.3 --locked
 
-      - name: Install npm dependencies and build frontend
-        run: |
-          npm install @tauri-apps/api@2.2.0 --save
-          npm install
-          npm run build
+      - name: Install npm dependencies
+        run: npm install
 
       - name: Remove old Android project
         run: rm -rf src-tauri/gen/android
