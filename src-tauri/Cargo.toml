@@ -6,9 +6,6 @@ authors = ["you"]
 license = "MIT"
 edition = "2021"
 
-[lib]
-name = "spectral_brain_lib"
-
 [build-dependencies]
 tauri-build = { version = "2.2.0" }
 
