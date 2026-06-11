@@ -41,7 +41,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf imagemagick
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf imagemagick gradle
 
       - name: Create placeholder icon
         run: |
@@ -57,65 +57,12 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version 2.2.3 --locked
 
-      - name: Create Android project manually
-        run: |
-          mkdir -p src-tauri/gen/android/app/src/main/java/com/spectral/brain
-          mkdir -p src-tauri/gen/android/app/src/main/res/values
+      - name: Remove old Android project
+        run: rm -rf src-tauri/gen/android
 
-          cat > src-tauri/gen/android/app/build.gradle.kts << 'EOF'
-          plugins {
-              id("com.android.application")
-              kotlin("android")
-          }
-
-          android {
-              namespace = "com.spectral.brain"
-              compileSdk = 34
-              defaultConfig {
-                  applicationId = "com.spectral.brain"
-                  minSdk = 24
-                  targetSdk = 34
-                  versionCode = 1
-                  versionName = "0.1.0"
-              }
-              buildTypes {
-                  getByName("debug") {
-                      isDebuggable = true
-                  }
-              }
-          }
-
-          dependencies {
-              implementation("androidx.core:core-ktx:1.12.0")
-          }
-          EOF
-
-          cat > src-tauri/gen/android/settings.gradle.kts << 'EOF'
-          rootProject.name = "spectral-brain"
-          include(":app")
-          EOF
-
-          cat > src-tauri/gen/android/app/src/main/AndroidManifest.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.INTERNET"/>
-              <application
-                  android:label="Spectral Brain"
-                  android:theme="@android:style/Theme.Material.NoActionBar"
-                  android:usesCleartextTraffic="true">
-                  <activity
-                      android:name="com.spectral.brain.MainActivity"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN"/>
-                          <category android:name="android.intent.category.LAUNCHER"/>
-                      </intent-filter>
-                  </activity>
-              </application>
-          </manifest>
-          EOF
-
-          echo 'org.gradle.jvmargs=-Xmx2048m' > src-tauri/gen/android/gradle.properties
+      - name: Initialize Android project (TAURI)
+        working-directory: src-tauri
+        run: cargo tauri android init --ci
 
       - name: Build APK
         run: cargo tauri android build --apk --ci
