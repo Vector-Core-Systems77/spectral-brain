@@ -30,6 +30,10 @@ jobs:
         with:
           accept-android-sdk-licenses: true
 
+      # هذه هي الخطوة الجديدة التي تحل المشكلة
+      - name: Set NDK environment
+        run: echo "NDK_HOME=$ANDROID_NDK_HOME" >> $GITHUB_ENV
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -54,15 +58,11 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version 2.2.3 --locked
 
-      # ============================================
-      # إنشاء مشروع Android يدويًا (بدون init)
-      # ============================================
       - name: Create Android project manually
         run: |
           mkdir -p src-tauri/gen/android/app/src/main/java/com/spectral/brain
           mkdir -p src-tauri/gen/android/app/src/main/res/values
 
-          # build.gradle.kts
           cat > src-tauri/gen/android/app/build.gradle.kts << 'EOF'
           plugins {
               id("com.android.application")
@@ -91,13 +91,11 @@ jobs:
           }
           EOF
 
-          # settings.gradle.kts
           cat > src-tauri/gen/android/settings.gradle.kts << 'EOF'
           rootProject.name = "spectral-brain"
           include(":app")
           EOF
 
-          # AndroidManifest.xml
           cat > src-tauri/gen/android/app/src/main/AndroidManifest.xml << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
@@ -118,7 +116,6 @@ jobs:
           </manifest>
           EOF
 
-          # gradle.properties
           echo 'org.gradle.jvmargs=-Xmx2048m' > src-tauri/gen/android/gradle.properties
 
       - name: Build APK
