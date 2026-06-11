@@ -2,8 +2,8 @@
   "name": "spectral-brain",
   "version": "1.0.0",
   "scripts": {
-    "dev": "tauri dev",
-    "build": "tauri build"
+    "dev": "tauri-cli dev",
+    "build": "tauri-cli build"
   },
   "dependencies": {
     "@tauri-apps/api": "2.2.0"
