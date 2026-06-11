@@ -67,10 +67,21 @@ jobs:
       - name: Build APK
         run: cargo tauri android build --apk --ci
 
-      - name: Upload APK
+      - name: Sign APK
+        run: |
+          # Generate a debug keystore
+          keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -noprompt
+
+          # Find the unsigned APK
+          UNSIGNED_APK=$(find src-tauri/gen/android/app/build/outputs/apk -name "*-release-unsigned.apk" | head -n 1)
+
+          # Sign the APK
+          $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign --ks debug.keystore --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android --out app-release-signed.apk "$UNSIGNED_APK"
+
+      - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
           name: Spectral-Brain-APK-${{ github.run_number }}
-          path: src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          path: app-release-signed.apk
           retention-days: 30
           if-no-files-found: error
