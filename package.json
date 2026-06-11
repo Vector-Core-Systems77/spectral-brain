@@ -1,11 +1,15 @@
 {
   "name": "spectral-brain",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "scripts": {
-    "dev": "tauri-cli dev",
-    "build": "tauri-cli build"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@tauri-apps/api": "2.2.0"
+    "@tauri-apps/api": "^2"
+  },
+  "devDependencies": {
+    "vite": "^5"
   }
 }
