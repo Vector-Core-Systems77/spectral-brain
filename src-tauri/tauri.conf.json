@@ -1,26 +1,15 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Spectral Brain",
-  "version": "0.1.0",
-  "identifier": "com.spectral.brain",
+  "package": {
+    "productName": "Spectral Brain",
+    "version": "1.0.0"
+  },
   "build": {
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
-    "devUrl": "http://localhost:1420",
-    "frontendDist": "../dist"
+    "frontendDist": "../src"
   },
-  "app": {
-    "windows": [
-      {
-        "label": "main",
-        "title": "Spectral Brain",
-        "width": 600,
-        "height": 400
-      }
-    ],
-    "security": {
-      "csp": null
+  "tauri": {
+    "bundle": {
+      "identifier": "com.spectral.brain",
+      "targets": ["android"]
     }
-  },
-  "plugins": {}
+  }
 }
