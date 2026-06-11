@@ -55,7 +55,7 @@ fn spectral_prime(n: usize) -> f64 {
     let lambda_n = compute_lambda_n(n);
     let r_n = compute_r_n(n);
     let mut p_k = (n as f64) * (n as f64).ln() + (n as f64) * (n as f64).ln().ln();
-    let mut alpha = if n <= 10 { 0.2 } else { 0.4 };
+    let alpha = if n <= 10 { 0.2 } else { 0.4 };
 
     for _ in 0..60 {
         let f_p = p_k.ln() - lambda_n - r_n;
@@ -93,6 +93,7 @@ fn run_spectral_brain() -> String {
     format!("Spectral Brain Heart Test (N=100)\nMean relative error: {:.6}", mean_error)
 }
 
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![run_spectral_brain])
