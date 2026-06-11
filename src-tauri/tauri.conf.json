@@ -1,15 +1,22 @@
 {
-  "package": {
-    "productName": "Spectral Brain",
-    "version": "1.0.0"
-  },
+  "productName": "Spectral Brain",
+  "version": "1.0.0",
+  "identifier": "com.spectral.brain",
   "build": {
     "frontendDist": "../src"
   },
-  "tauri": {
-    "bundle": {
-      "identifier": "com.spectral.brain",
-      "targets": ["android"]
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Spectral Brain",
+        "width": 600,
+        "height": 400
+      }
+    ],
+    "security": {
+      "csp": null
     }
-  }
+  },
+  "plugins": {}
 }
