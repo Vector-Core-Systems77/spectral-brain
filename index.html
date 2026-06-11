@@ -1,14 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spectral Brain</title>
+  </head>
   <body>
     <h1>Spectral Brain</h1>
     <button id="run">Run Spectral Reasoning</button>
     <pre id="output"></pre>
+
     <script>
       const { invoke } = window.__TAURI__.tauri;
+
       document.getElementById("run").addEventListener("click", async () => {
-        const result = await invoke("run_spectral_brain");
-        document.getElementById("output").textContent = result;
+        const output = document.getElementById("output");
+        output.textContent = "Running Spectral Reasoning...";
+        try {
+          // استدعاء الأمر المسجل في Rust
+          const result = await invoke("run_spectral_brain");
+          output.textContent = result;
+        } catch (err) {
+          output.textContent = "Error invoking Spectral Brain: " + err;
+        }
       });
     </script>
   </body>
