@@ -22,6 +22,7 @@
   "bundle": {
     "active": true,
     "targets": ["apk"],
+    "identifier": "com.spectral.brain.poc",
     "icon": []
   }
 }
