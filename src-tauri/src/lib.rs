@@ -5,10 +5,7 @@
 
 use tauri::command;
 
-// =======================
-// القلب الطيفي الحقيقي
-// =======================
-
+// القلب الطيفي - بدون تعديل منطقك
 const ZETA_ZEROS: [f64; 10] = [
     14.134725, 21.022040, 25.010858, 30.424876, 32.935062,
     37.586178, 40.918719, 43.327073, 48.005151, 49.773832
@@ -32,7 +29,7 @@ fn true_prime(n: usize) -> usize {
     let mut count = 0;
     let mut x = 2;
     loop {
-        if (2..=((x as f64).sqrt() as usize)).all(|k| x % k != 0) {
+        if (2..=((x as f64).sqrt() as usize)).all(|k| x % k!= 0) {
             count += 1;
             if count == n { return x; }
         }
@@ -50,7 +47,6 @@ fn spectral_prime(n: usize) -> f64 {
     let r_n = compute_r_n(n);
     let mut p_k = (n as f64) * (n as f64).ln() + (n as f64) * (n as f64).ln().ln();
     let alpha = if n <= 10 { 0.2 } else { 0.4 };
-    
     for _ in 0..60 {
         let f_p = p_k.ln() - lambda_n - r_n;
         let f_prime = 1.0 / p_k;
@@ -69,45 +65,39 @@ fn spectral_prime(n: usize) -> f64 {
     p_k + gamma * (p_true - p_k)
 }
 
-// =======================
-// أوامر Tauri
-// =======================
-
 #[command]
-fn ping() -> String { 
-    "pong".to_string() 
-}
+fn ping() -> String { "pong".to_string() }
 
-// جعلها async لمنع حجب الـ Main Thread في أندرويد
 #[command]
 async fn run_spectral_brain() -> String {
-    let n = 100;
-    let mut errors = Vec::new();
-    let mut output = String::new();
-    output.push_str("Spectral Brain Heart Test (N=100)\n");
-    output.push_str("First 10 estimated primes:\n");
-    
-    for i in 1..=n {
-        let p_true = true_prime(i) as f64;
-        let p_est = spectral_prime(i);
-        let rel_err = ((p_est - p_true).abs()) / p_true;
-        errors.push(rel_err);
-        if i <= 10 {
-            output.push_str(&format!(
-                "  n={}: true={}, est={:.3}, error={:.6}\n",
-                i, p_true, p_est, rel_err
-            ));
+    tauri::async_runtime::spawn_blocking(|| {
+        let n = 100;
+        let mut errors = Vec::new();
+        let mut output = String::new();
+        output.push_str("Spectral Brain Heart Test (N=100)\n");
+        output.push_str("First 10 estimated primes:\n");
+        for i in 1..=n {
+            let p_true = true_prime(i) as f64;
+            let p_est = spectral_prime(i);
+            let rel_err = ((p_est - p_true).abs()) / p_true;
+            errors.push(rel_err);
+            if i <= 10 {
+                output.push_str(&format!(
+                    " n={}: true={}, est={:.3}, error={:.6}\n",
+                    i, p_true, p_est, rel_err
+                ));
+            }
         }
-    }
-    let mean_error: f64 = errors.iter().sum::<f64>() / (n as f64);
-    output.push_str(&format!("\nMean relative error: {:.6}", mean_error));
-    output
+        let mean_error: f64 = errors.iter().sum::<f64>() / (n as f64);
+        output.push_str(&format!("\nMean relative error: {:.6}", mean_error));
+        output
+    }).await.unwrap()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![ping, run_spectral_brain])
-        .run(tauri::generate_context!())
-        .expect("error while running Spectral Brain");
+       .invoke_handler(tauri::generate_handler![ping, run_spectral_brain])
+       .run(tauri::generate_context!())
+       .expect("error while running Spectral Brain");
 }
