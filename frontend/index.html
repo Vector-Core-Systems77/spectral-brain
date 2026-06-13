@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spectral Brain</title>
-    <style>
-        body { font-family: monospace; padding: 20px; background: #111; color: #0f0; }
-        button { background: #333; color: #0f0; border: 1px solid #0f0; padding: 10px; cursor: pointer; margin: 5px; }
-        pre { background: #000; padding: 15px; border: 1px solid #333; overflow-x: auto; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spectral Brain PoC</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #0a0a0a; color: #00ff00; }
+    button { background: #1a1a1a; color: #00ff00; border: 1px solid #00ff00; padding: 10px 20px; cursor: pointer; margin: 5px; }
+    pre { background: #000; padding: 15px; border: 1px solid #333; overflow-x: auto; white-space: pre-wrap; }
+  </style>
 </head>
 <body>
-    <h1>Spectral Brain PoC</h1>
-    <button id="ping">Ping Engine</button>
-    <button id="run">Run Spectral Reasoning</button>
-    <pre id="output">Waiting for input...</pre>
-    
-    <!-- المسار نسبي لأننا أزلنا Vite -->
-    <script src="./main.js"></script>
+  <h1>Spectral Brain PoC</h1>
+  <button id="ping">Ping Engine</button>
+  <button id="run">Run Spectral Reasoning</button>
+  <pre id="output">Waiting for input...</pre>
+  <script type="module" src="/main.js"></script>
 </body>
 </html>
