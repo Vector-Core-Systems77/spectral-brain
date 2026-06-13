@@ -1,23 +1,23 @@
-const { invoke } = window.__TAURI__.core;
+import { invoke } from '@tauri-apps/api/core';
 
 const output = document.getElementById("output");
 
 document.getElementById("ping").addEventListener("click", async () => {
-    output.textContent = "Testing connection...";
-    try {
-        const result = await invoke("ping");
-        output.textContent = "Response: " + result;
-    } catch (err) {
-        output.textContent = "Error: " + err;
-    }
+  output.textContent = "Testing connection...";
+  try {
+    const result = await invoke("ping");
+    output.textContent = "Response: " + result;
+  } catch (err) {
+    output.textContent = "Error: " + err;
+  }
 });
 
 document.getElementById("run").addEventListener("click", async () => {
-    output.textContent = "Running Spectral Reasoning... (Please wait)";
-    try {
-        const result = await invoke("run_spectral_brain");
-        output.textContent = result;
-    } catch (err) {
-        output.textContent = "Error: " + err;
-    }
+  output.textContent = "Running Spectral Reasoning... Please wait 5-10s";
+  try {
+    const result = await invoke("run_spectral_brain");
+    output.textContent = result;
+  } catch (err) {
+    output.textContent = "Error: " + err;
+  }
 });
