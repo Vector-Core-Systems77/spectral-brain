@@ -21,7 +21,6 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["android"],
     "icon": []
   }
 }
