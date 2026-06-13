@@ -29,7 +29,6 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           accept-android-sdk-licenses: true
-          ndk-version: 25.2.9519653
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -39,20 +38,25 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf imagemagick
+
+      - name: Create placeholder icon
+        run: |
+          mkdir -p src-tauri/icons
+          convert -size 256x256 xc:blue -type TrueColorAlpha PNG32:src-tauri/icons/icon.png
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version 2.2.3 --locked
 
       - name: Install npm dependencies and build frontend
         run: |
           npm install
           npm run build
 
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli --version 2.2.3 --locked
-
       - name: Remove old Android project
         run: rm -rf src-tauri/gen/android
 
-      - name: Initialize Android project (TAURI)
+      - name: Initialize Android project
         working-directory: src-tauri
         run: cargo tauri android init --ci
 
@@ -61,21 +65,11 @@ jobs:
 
       - name: Find and Sign APK
         run: |
-          # البحث عن الملف غير الموقع
           UNSIGNED_APK=$(find src-tauri/gen/android/app/build/outputs/apk -name "*.apk" ! -name "*signed*" | head -n 1)
           echo "Found unsigned APK: $UNSIGNED_APK"
-          
-          # إنشاء مفتاح توقيع مؤقت
           keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -noprompt
-          
-          # البحث عن أداة التوقيع
           APKSIGNER=$(find $ANDROID_SDK_ROOT/build-tools -name "apksigner" | head -n 1)
-          echo "Using apksigner: $APKSIGNER"
-          
-          # توقيع الملف
           $APKSIGNER sign --ks debug.keystore --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android --out app-release-signed.apk "$UNSIGNED_APK"
-          
-          echo "Signed APK created: app-release-signed.apk"
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
