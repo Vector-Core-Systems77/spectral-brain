@@ -1,0 +1,32 @@
+{
+  "productName": "Spectral Brain",
+  "version": "0.1.0",
+  "identifier": "com.spectral.brain",
+  "build": {
+    "beforeBuildCommand": "",
+    "frontendDist": "../frontend"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Spectral Brain PoC",
+        "width": 800,
+        "height": 600
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["apk"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png"
+    ]
+  }
+}
