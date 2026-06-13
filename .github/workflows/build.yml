@@ -1,0 +1,46 @@
+name: Build Spectral Brain Android APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - uses: actions/setup-java@v4
+        with: { distribution: 'temurin', java-version: '17' }
+      - uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android, i686-linux-android
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf imagemagick
+      - name: Create icon
+        run: |
+          mkdir -p src-tauri/icons
+          magick -size 256x256 xc:#0a0a0a -gravity center -pointsize 70 -fill white -annotate +0+0 "SB" src-tauri/icons/icon.png
+      - run: npm install && npm run build
+      - run: cargo install tauri-cli --version 2.2.3 --locked
+      - run: rm -rf src-tauri/gen/android
+      - name: Init Android
+        working-directory: src-tauri
+        run: cargo tauri android init --ci
+      - run: cargo tauri android build --apk --ci
+      - name: Sign APK
+        run: |
+          keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -noprompt
+          UNSIGNED_APK=$(find src-tauri/gen/android/app/build/outputs/apk/release -name "*-unsigned.apk" | head -n 1)
+          $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign --ks debug.keystore --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android --out src-tauri/gen/android/app/build/outputs/apk/release/app-release-signed.apk "$UNSIGNED_APK"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Spectral-Brain-APK-${{ github.run_number }}
+          path: src-tauri/gen/android/app/build/outputs/apk/release/app-release-signed.apk
+          if-no-files-found: error
